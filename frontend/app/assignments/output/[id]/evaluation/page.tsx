@@ -45,44 +45,39 @@ interface QuestionEvaluationCardProps {
   index: number;
 }
 
-// function QuestionEvaluationCard({ question, index }: QuestionEvaluationCardProps) {
-//   const {
-//     assessmentToggles,
-//     assessmentRubrics,
-//     assessmentExplanations,
-//     setAssessmentToggle,
-//     setAssessmentRubrics,
-//     setAssessmentExplanation,
-//   } = useAssignmentStore();
+function QuestionEvaluationCard({ question, index }: QuestionEvaluationCardProps) {
+  const {
+    assessmentToggles,
+    assessmentRubrics,
+    assessmentExplanations,
+    setAssessmentToggle,
+    setAssessmentRubrics,
+    setAssessmentExplanation,
+  } = useAssignmentStore();
 
-//   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-//   const enabled = assessmentToggles[question.id] || false;
-//   const selectedRubrics = assessmentRubrics[question.id] || [];
-//   const explanation = assessmentExplanations[question.id] || "";
-const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-const [enabled, setEnabled] = useState(false);
-const [selectedRubrics, setSelectedRubrics] = useState<string[]>([]);
-const [explanation, setExplanation] = useState("");
+  const enabled = assessmentToggles[question.id] || false;
+  const selectedRubrics = assessmentRubrics[question.id] || [];
+  const explanation = assessmentExplanations[question.id] || "";
 
   const handleSelectRubric = (rubric: string) => {
     if (!selectedRubrics.includes(rubric)) {
       const nextRubrics = [...selectedRubrics, rubric];
-      setSelectedRubrics(nextRubrics);
-setExplanation(generateFeedbackText(nextRubrics));
+      setAssessmentRubrics(question.id, nextRubrics);
+      setAssessmentExplanation(question.id, generateFeedbackText(nextRubrics));
     }
     setIsDropdownOpen(false);
   };
 
   const handleRemoveRubric = (rubric: string) => {
-    const nextRubrics = selectedRubrics.filter(r => r !== rubric);
-    setSelectedRubrics(nextRubrics);
-setExplanation(generateFeedbackText(nextRubrics));
+    const nextRubrics = selectedRubrics.filter((r: string) => r !== rubric);
+    setAssessmentRubrics(question.id, nextRubrics);
+    setAssessmentExplanation(question.id, generateFeedbackText(nextRubrics));
   };
 
   const handleTextareaChange = (text: string) => {
-    setExplanation(text);
+    setAssessmentExplanation(question.id, text);
   };
 
   return (
@@ -107,7 +102,7 @@ setExplanation(generateFeedbackText(nextRubrics));
         </div>
         <button
           type="button"
-          onClick={() => setEnabled(!enabled)}
+          onClick={() => setAssessmentToggle(question.id, !enabled)}
           className={`w-12 h-6 rounded-full p-0.5 transition-colors duration-200 cursor-pointer outline-none focus:ring-2 focus:ring-[#1F1F1F]/20 relative shrink-0 ${
             enabled ? "bg-[#1F1F1F]" : "bg-[#CCCCCC]/60"
           }`}
@@ -186,7 +181,7 @@ setExplanation(generateFeedbackText(nextRubrics));
               {/* Removable chips/tags */}
               {selectedRubrics.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-1">
-                  {selectedRubrics.map((rubric) => (
+                  {selectedRubrics.map((rubric: string) => (
                     <div
                       key={rubric}
                       className="bg-white border border-[#EBEBEB] text-[#1F1F1F] text-[12px] font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm select-none animate-in scale-in duration-150"

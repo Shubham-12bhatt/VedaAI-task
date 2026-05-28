@@ -39,6 +39,11 @@ export interface AssignmentStore {
   // Validation Errors
   errors: FormErrors;
 
+  // Assessment State
+  assessmentToggles: Record<string, boolean>;
+  assessmentRubrics: Record<string, string[]>;
+  assessmentExplanations: Record<string, string>;
+
   // Core Actions requested in Phase 2
   addAssignment: (assignment: Assignment) => void;
   removeAssignment: (id: string) => void;
@@ -55,6 +60,11 @@ export interface AssignmentStore {
   setAdditionalInfo: (info: string) => void;
   setGeneratedAssignment: (asm: Assignment | null) => void;
   setPdfGenerationState: (state: "idle" | "generating" | "success" | "error") => void;
+
+  // Assessment actions
+  setAssessmentToggle: (questionId: string, enabled: boolean) => void;
+  setAssessmentRubrics: (questionId: string, rubrics: string[]) => void;
+  setAssessmentExplanation: (questionId: string, explanation: string) => void;
 
   // Search & Filter Actions
   setSearchQuery: (query: string) => void;
@@ -335,6 +345,11 @@ export const useAssignmentStore = create<AssignmentStore>((set, get) => ({
 
   errors: {},
 
+  // Assessment initial state
+  assessmentToggles: {},
+  assessmentRubrics: {},
+  assessmentExplanations: {},
+
   // Core Actions
   addAssignment: (newAssignment) => set((state) => ({
     assignments: [newAssignment, ...state.assignments],
@@ -412,6 +427,17 @@ export const useAssignmentStore = create<AssignmentStore>((set, get) => ({
   }),
   setOutputFormat: (outputFormat) => set({ outputFormat }),
 
+  // Assessment actions
+  setAssessmentToggle: (questionId, enabled) => set((state) => ({
+    assessmentToggles: { ...state.assessmentToggles, [questionId]: enabled }
+  })),
+  setAssessmentRubrics: (questionId, rubrics) => set((state) => ({
+    assessmentRubrics: { ...state.assessmentRubrics, [questionId]: rubrics }
+  })),
+  setAssessmentExplanation: (questionId, explanation) => set((state) => ({
+    assessmentExplanations: { ...state.assessmentExplanations, [questionId]: explanation }
+  })),
+
   addQuestionRow: (type = "Multiple Choice Questions") => set((state) => {
     const newId = Math.random().toString(36).substring(2, 9);
     const newRow: QuestionRowType = {
@@ -451,6 +477,9 @@ export const useAssignmentStore = create<AssignmentStore>((set, get) => ({
     outputFormat: "PDF Document",
 
     errors: {},
+    assessmentToggles: {},
+    assessmentRubrics: {},
+    assessmentExplanations: {},
   }),
 
   // Legacy validateStep action (will delegate/support react-hook-form)
