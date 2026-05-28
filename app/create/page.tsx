@@ -26,10 +26,14 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import Logo from "@/components/Logo";
 import DatePicker from "@/components/DatePicker";
-import FileUploadZone from "@/components/FileUploadZone";
+import UploadBox from "@/components/assignment/UploadBox";
 import QuestionRow from "@/components/QuestionRow";
 import AssignmentCard from "@/components/AssignmentCard";
 import { useAssignmentStore, Assignment } from "./assignmentStore";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { assignmentSchema, AssignmentFormValues } from "@/lib/validations/assignmentSchema";
+import { Toaster, toast } from "sonner";
 
 interface GeneratedQuestionPaperViewProps {
   assignment: Assignment;
@@ -255,6 +259,56 @@ export default function CreateAssignmentPage() {
     createAssignment,
     resetForm,
   } = useAssignmentStore();
+
+  // Initialize React Hook Form with Zod validation resolver
+  const {
+    register,
+    setValue,
+    watch,
+    formState: { errors: formErrors, isValid },
+    trigger,
+    reset: resetFormValues,
+  } = useForm<AssignmentFormValues>({
+    resolver: zodResolver(assignmentSchema),
+    mode: "onChange",
+    defaultValues: {
+      title,
+      file,
+      dueDate,
+      questionRows,
+      additionalInfo,
+      difficulty,
+      duration,
+      customDuration,
+      sections,
+      outputFormat,
+    },
+  });
+
+  // Keep react-hook-form in sync when creating/resetting from store
+  useEffect(() => {
+    resetFormValues({
+      title,
+      file,
+      dueDate,
+      questionRows,
+      additionalInfo,
+      difficulty,
+      duration,
+      customDuration,
+      sections,
+      outputFormat,
+    });
+  }, [isCreating, resetFormValues]);
+
+  // Sync dynamic nested arrays
+  useEffect(() => {
+    setValue("questionRows", questionRows, { shouldValidate: true });
+  }, [questionRows, setValue]);
+
+  useEffect(() => {
+    setValue("sections", sections, { shouldValidate: true });
+  }, [sections, setValue]);
 
   // Navigation Items
   const menuItems = [
@@ -494,34 +548,45 @@ export default function CreateAssignmentPage() {
   const DURATION_OPTIONS = ["1 Hour", "2 Hours", "3 Hours", "Custom"];
   const FORMAT_OPTIONS = ["PDF Document", "Word Document (.docx)", "Google Forms"];
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep === 1) {
-      if (validateStep(1)) {
+      const isStep1Valid = await trigger(["title", "file", "dueDate", "questionRows"]);
+      if (isStep1Valid) {
         setStep(2);
+      } else {
+        toast.error("Please complete the required fields and resolve errors.");
       }
     } else if (currentStep === 2) {
-      if (validateStep(2)) {
+      const isStep2Valid = await trigger(["sections", "difficulty", "duration", "outputFormat"]);
+      if (isStep2Valid) {
         setIsGenerating(true);
         setGenerationStep(0);
+        toast.loading("Generating your assessment...", { id: "gen-toast" });
 
-        const t1 = setTimeout(() => setGenerationStep(1), 1200);
-        const t2 = setTimeout(() => setGenerationStep(2), 2600);
+        const t1 = setTimeout(() => {
+          setGenerationStep(1);
+        }, 1200);
+        
+        const t2 = setTimeout(() => {
+          setGenerationStep(2);
+        }, 2600);
+
         const t3 = setTimeout(() => {
           createAssignment();
           setIsGenerating(false);
+          toast.dismiss("gen-toast");
+          toast.success("Assignment successfully generated!");
         }, 4200);
 
-        return () => {
-          clearTimeout(t1);
-          clearTimeout(t2);
-          clearTimeout(t3);
-        };
+      } else {
+        toast.error("Please select at least one section to include.");
       }
     }
   };
 
   return (
     <div className="min-h-screen w-full bg-[#E2E2E2] flex items-center justify-center p-0 md:p-6 overflow-y-auto overflow-x-hidden font-bricolage">
+      <Toaster position="top-center" richColors />
       <div className="w-full min-h-screen md:min-h-0 md:w-[1440px] md:h-[780px] md:min-w-[1440px] md:max-h-[780px] bg-gradient-to-b from-[#EEEEEE] to-[#DADADA] md:rounded-[24px] shadow-2xl relative overflow-hidden flex flex-col md:flex-row p-3 gap-3">
         {/* LEFT SIDEBAR (Desktop) */}
         <aside className="hidden md:flex flex-col w-[304px] h-[756px] bg-white rounded-[16px] p-6 card-shadow shrink-0">
@@ -729,25 +794,43 @@ export default function CreateAssignmentPage() {
                           <input
                             type="text"
                             value={title}
-                            onChange={(e) => setTitle(e.target.value)}
+                            onChange={(e) => {
+                              setTitle(e.target.value);
+                              setValue("title", e.target.value, { shouldValidate: true });
+                            }}
                             placeholder="e.g. Quiz on Electricity"
-                            className={`w-full h-[48px] px-4 rounded-[12px] bg-[#F1F1F1] text-[#1F1F1F] font-inter text-[15px] font-medium tracking-tight outline-none border transition-all duration-150 ${errors.title
-                              ? "border-red-500/80 focus:border-red-500 bg-red-50/10"
-                              : "border-transparent focus:bg-[#EAEAEA] focus:border-[#CCCCCC]"
-                              }`}
+                            className={`w-full h-[48px] px-4 rounded-[12px] bg-[#F1F1F1] text-[#1F1F1F] font-inter text-[15px] font-medium tracking-tight outline-none border transition-all duration-150 ${
+                              formErrors.title || errors.title
+                                ? "border-red-500/80 focus:border-red-500 bg-red-50/10"
+                                : "border-transparent focus:bg-[#EAEAEA] focus:border-[#CCCCCC]"
+                            }`}
                           />
-                          {errors.title && (
+                          {(formErrors.title || errors.title) && (
                             <span className="text-[12px] font-medium text-red-500 mt-1 leading-none tracking-tight">
-                              {errors.title}
+                              {formErrors.title?.message || errors.title}
                             </span>
                           )}
                         </div>
 
                         {/* File Upload Zone */}
-                        <FileUploadZone value={file} onChange={setFile} error={errors.file} />
+                        <UploadBox
+                          value={file}
+                          onChange={(uploadedFile) => {
+                            setFile(uploadedFile);
+                            setValue("file", uploadedFile, { shouldValidate: true });
+                          }}
+                          error={formErrors.file?.message || errors.file}
+                        />
 
                         {/* Due Date picker */}
-                        <DatePicker value={dueDate} onChange={setDueDate} error={errors.dueDate} />
+                        <DatePicker
+                          value={dueDate}
+                          onChange={(dateStr) => {
+                            setDueDate(dateStr);
+                            setValue("dueDate", dateStr, { shouldValidate: true });
+                          }}
+                          error={formErrors.dueDate?.message || errors.dueDate}
+                        />
 
                         {/* Question Types table */}
                         <div className="flex flex-col gap-4">
@@ -776,9 +859,9 @@ export default function CreateAssignmentPage() {
                             ))}
                           </div>
 
-                          {errors.questionRows && (
+                          {(formErrors.questionRows || errors.questionRows) && (
                             <p className="text-[12px] font-medium text-red-500 tracking-tight mt-1">
-                              {errors.questionRows}
+                              {formErrors.questionRows?.message || errors.questionRows}
                             </p>
                           )}
 
@@ -974,9 +1057,9 @@ export default function CreateAssignmentPage() {
                             })}
                           </div>
 
-                          {errors.sections && (
+                          {(formErrors.sections || errors.sections) && (
                             <p className="text-[12px] font-medium text-red-500 tracking-tight mt-1">
-                              {errors.sections}
+                              {formErrors.sections?.message || errors.sections}
                             </p>
                           )}
                         </div>
@@ -1025,7 +1108,12 @@ export default function CreateAssignmentPage() {
                   {/* Next button */}
                   <button
                     onClick={handleNext}
-                    className="h-[44px] bg-[#1F1F1F] hover:bg-black text-white font-inter font-semibold text-[14px] px-6 rounded-full flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.98] shadow-lg select-none"
+                    disabled={
+                      currentStep === 1
+                        ? !title || !file || !dueDate || questionRows.length === 0 || !!formErrors.title || !!formErrors.dueDate || !!formErrors.file
+                        : sections.length === 0 || !!formErrors.sections
+                    }
+                    className="h-[44px] bg-[#1F1F1F] hover:bg-black text-white font-inter font-semibold text-[14px] px-6 rounded-full flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.98] shadow-lg select-none disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {currentStep === 2 ? (
                       <>
