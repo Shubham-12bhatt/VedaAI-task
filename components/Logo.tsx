@@ -7,10 +7,10 @@ export default function Logo({ className = "" }: { className?: string }) {
       <img
         src="/logo 2.png"
         alt="VedaAI Logo"
-        className="w-[38px] h-[38px] object-contain shrink-0"
+        className="w-[42px] h-[42px] object-contain shrink-0"
       />
       {/* VedaAI typography */}
-      <span className="font-bricolage text-[22px] font-bold tracking-tight text-[#1E1E1E]">
+      <span className="font-bricolage text-[28px] font-bold tracking-tight text-[#1E1E1E]">
         VedaAI
       </span>
     </div>
