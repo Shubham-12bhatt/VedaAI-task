@@ -2,7 +2,7 @@
 
 AI-powered Assessment Creation Platform built for the VedaAI Full Stack Engineering Assignment.
 
-Live Demo: https://veda-ai-shubham.vercel.app/
+Live Demo: https://veda-ai-shubham.vercel.app/ <br>
 GitHub Repository: https://github.com/Shubham-12bhatt/VedaAI-task
 
 ---
