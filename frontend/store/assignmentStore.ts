@@ -590,10 +590,6 @@ export const useAssignmentStore = create<AssignmentStore>((set, get) => ({
         newErrors.title = "Assignment name is required.";
         isValid = false;
       }
-      if (!file) {
-        newErrors.file = "Please upload a reference document or image.";
-        isValid = false;
-      }
       if (!dueDate) {
         newErrors.dueDate = "Due date is required.";
         isValid = false;

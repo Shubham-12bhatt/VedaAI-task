@@ -15,6 +15,7 @@ import {
   Pencil,
   FolderPlus,
   Share2,
+  Download,
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { useAssignmentStore, Assignment } from "@/app/assignments/assignmentStore";
@@ -66,22 +67,94 @@ export default function QuestionPaperPage() {
   const handleDownloadPDF = async () => {
     setPdfGenerationState("generating");
     try {
-      const html2pdf = (await import("html2pdf.js")).default;
+      const jsPDFModule = await import("jspdf");
+      const jsPDF = jsPDFModule.default || jsPDFModule.jsPDF || jsPDFModule;
+
+      const html2canvasModule = await import("html2canvas-pro");
+      const html2canvas = html2canvasModule.default || html2canvasModule;
+
       const element = document.getElementById("question-paper-print");
       if (!element) {
         setPdfGenerationState("error");
         return;
       }
 
-      const opt = {
-        margin: [10, 12, 10, 12],
-        filename: `${assignment.title.replace(/\s+/g, "_")}_Question_Paper.pdf`,
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2.5, useCORS: true, logging: false, letterRendering: true },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-      };
+      // Temporarily expand styles to avoid clipping issues in html2canvas
+      const originalOverflow = element.style.overflow;
+      const originalHeight = element.style.height;
+      const originalMaxHeight = element.style.maxHeight;
+      const originalPosition = element.style.position;
 
-      await html2pdf().set(opt).from(element).save();
+      element.style.overflow = "visible";
+      element.style.height = "auto";
+      element.style.maxHeight = "none";
+      element.style.position = "relative";
+
+      // Also temporarily override parent container styling to prevent viewport clipping
+      const parent = element.parentElement;
+      let originalParentOverflow = "";
+      let originalParentHeight = "";
+      let originalParentMaxHeight = "";
+      if (parent) {
+        originalParentOverflow = parent.style.overflow;
+        originalParentHeight = parent.style.height;
+        originalParentMaxHeight = parent.style.maxHeight;
+
+        parent.style.overflow = "visible";
+        parent.style.height = "auto";
+        parent.style.maxHeight = "none";
+      }
+
+      // Render the element to a canvas
+      const canvas = await html2canvas(element, {
+        scale: 2.2,
+        useCORS: true,
+        logging: false,
+        windowWidth: 1024,
+      });
+
+      // Restore original styles
+      element.style.overflow = originalOverflow;
+      element.style.height = originalHeight;
+      element.style.maxHeight = originalMaxHeight;
+      element.style.position = originalPosition;
+      if (parent) {
+        parent.style.overflow = originalParentOverflow;
+        parent.style.height = originalParentHeight;
+        parent.style.maxHeight = originalParentMaxHeight;
+      }
+
+      // Convert canvas to PDF
+      // A4 dimensions in pt: 595.28 x 841.89
+      const imgWidth = 595.28;
+      const pageHeight = 841.89;
+      
+      // Calculate margins (12mm left/right -> 12 * 72 / 25.4 = ~34pt)
+      const marginPt = 34; 
+      const contentWidth = imgWidth - (marginPt * 2);
+      const contentHeight = (canvas.height * contentWidth) / canvas.width;
+
+      const imgData = canvas.toDataURL("image/jpeg", 0.95);
+      const pdf = new jsPDF("p", "pt", "a4");
+
+      let heightLeft = contentHeight;
+      let position = marginPt; // starting top position
+
+      // Add first page
+      pdf.addImage(imgData, "JPEG", marginPt, position, contentWidth, contentHeight);
+      heightLeft -= (pageHeight - (marginPt * 2));
+
+      // Add subsequent pages if the content height exceeds one page
+      while (heightLeft > 0) {
+        position = marginPt - (contentHeight - heightLeft);
+        pdf.addPage();
+        pdf.addImage(imgData, "JPEG", marginPt, position, contentWidth, contentHeight);
+        heightLeft -= (pageHeight - (marginPt * 2));
+      }
+
+      const filename = `${assignment.title.replace(/\s+/g, "_")}_Question_Paper.pdf`;
+      pdf.save(filename);
+
       setPdfGenerationState("success");
       setTimeout(() => {
         setPdfGenerationState("idle");
@@ -190,62 +263,68 @@ export default function QuestionPaperPage() {
           {/* MAIN CONTENT AREA */}
           <main className="w-full flex-1 min-h-0 overflow-hidden flex flex-col gap-[22px]">
             
-            {/* Top Summary Card (Sit on light gray background) */}
-            <div className="w-full bg-white rounded-[24px] p-6 border border-[#EBEBEB] shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 relative text-[#1F1F1F] shrink-0">
+            {/* Top Summary Card - Re-designed to match Dark Card theme */}
+            <div className="w-full bg-[#1F1F1F] rounded-[24px] p-6 border border-neutral-800/80 shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-6 relative text-white shrink-0">
               <div className="flex-1 min-w-0 flex flex-col gap-1 text-left">
-                <h2 className="font-bricolage text-[20px] md:text-[22px] font-bold tracking-tight text-[#1F1F1F]">
-                  {assignment.title}
-                </h2>
-                <p className="font-inter text-[13.5px] text-[#5E5E5E] leading-relaxed max-w-[850px] mt-1">
-                  {quizDescription}
+                <p className="font-bricolage text-[14px] md:text-[15px] font-normal leading-relaxed text-neutral-300">
+                  Certainly, John Doe! Here are customized Question Paper for your{" "}
+                  <span className="text-white font-semibold">
+                    {assignment.className?.replace("Class: ", "") || "Class 12th"}{" "}
+                    {assignment.subject || "Computer Science"}
+                  </span>{" "}
+                  classes on the{" "}
+                  <span className="text-white font-semibold">
+                    {assignment.title || "quiz on java language"}
+                  </span>{" "}
+                  chapters:
                 </p>
                 
                 {/* Action buttons row */}
                 <div className="flex flex-wrap items-center gap-2.5 mt-4">
                   <button
                     type="button"
-                    onClick={() => alert("Edit quiz details...")}
-                    className="h-[38px] px-5 rounded-full font-bricolage text-[13px] font-semibold text-[#1F1F1F] bg-white border border-[#E1E1E1] hover:bg-neutral-50 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-[0.98] transition-all select-none"
+                    onClick={handleDownloadPDF}
+                    disabled={pdfGenerationState === "generating"}
+                    className="h-[38px] px-5 rounded-full font-bricolage text-[13px] font-bold text-[#1F1F1F] bg-white hover:bg-neutral-100 flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed select-none shrink-0"
                   >
-                    <Pencil size={14} className="text-[#1F1F1F]" />
+                    {pdfGenerationState === "generating" ? (
+                      <>
+                        <LoaderCircle className="w-4 h-4 animate-spin text-[#1F1F1F]" />
+                        <span>Downloading...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Download size={14} className="text-[#1F1F1F] shrink-0" />
+                        <span>Download as PDF</span>
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleAIAssessmentClick}
+                    className="h-[38px] px-5 rounded-full font-bricolage text-[13px] font-bold text-white bg-white/10 hover:bg-white/20 flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-[0.98] transition-all select-none border border-white/5"
+                  >
+                    <Sparkles size={14} fill="white" className="text-white shrink-0 animate-pulse" />
+                    <span>AI Assessment</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => alert("Edit quiz details...")}
+                    className="h-[38px] px-5 rounded-full font-bricolage text-[13px] font-semibold text-white bg-transparent border border-white/25 hover:bg-white/10 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-[0.98] transition-all select-none"
+                  >
+                    <Pencil size={14} className="text-white" />
                     <span>Edit</span>
                   </button>
                   
                   <button
                     type="button"
                     onClick={() => alert("Saved to Library!")}
-                    className="h-[38px] px-5 rounded-full font-bricolage text-[13px] font-semibold text-[#1F1F1F] bg-white border border-[#E1E1E1] hover:bg-neutral-50 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-[0.98] transition-all select-none"
+                    className="h-[38px] px-5 rounded-full font-bricolage text-[13px] font-semibold text-white bg-transparent border border-white/25 hover:bg-white/10 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-[0.98] transition-all select-none"
                   >
-                    <FolderPlus size={14} className="text-[#1F1F1F]" />
+                    <FolderPlus size={14} className="text-white" />
                     <span>Save to Library</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleAIAssessmentClick}
-                    className="h-[38px] px-5 rounded-full font-bricolage text-[13px] font-bold text-white bg-black hover:bg-neutral-800 flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-[0.98] transition-all select-none"
-                  >
-                    <Sparkles size={14} fill="white" className="text-white shrink-0 animate-pulse" />
-                    <span>AI Assessment</span>
-                  </button>
-                  
-                  <button
-                    type="button"
-                    onClick={handleDownloadPDF}
-                    disabled={pdfGenerationState === "generating"}
-                    className="h-[38px] px-5 rounded-full font-bricolage text-[13px] font-bold text-white bg-[#FF5029] hover:bg-[#E04420] flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed select-none shrink-0"
-                  >
-                    {pdfGenerationState === "generating" ? (
-                      <>
-                        <LoaderCircle className="w-4 h-4 animate-spin text-white" />
-                        <span>Exporting...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Share2 size={14} className="text-white shrink-0" />
-                        <span>Export</span>
-                      </>
-                    )}
                   </button>
                 </div>
               </div>

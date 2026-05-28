@@ -2,7 +2,7 @@ import { Worker } from "bullmq";
 import { redisConnection } from "../config/redis";
 import { Assignment } from "../models/Assignment";
 import { emitStatusUpdate } from "../socket/socketServer";
-import { generateQuestionsForAssignment } from "./questionGenerator";
+import { generateQuestionsWithAI } from "./groqService";
 
 const QUEUE_NAME = "assignment-generation";
 
@@ -33,12 +33,8 @@ export const assignmentWorker = new Worker(
       // Step 1: Formulating question patterns
       await delay(1500);
 
-      // 3. Generate questions
-      const generated = generateQuestionsForAssignment(
-        assignment.questionTypes,
-        assignment.difficulty || "Medium",
-        assignment.title
-      );
+      // 3. Generate questions via Groq AI Service
+      const generated = await generateQuestionsWithAI(assignment);
 
       // Step 2: Finalizing rubrics & layout
       await delay(1500);

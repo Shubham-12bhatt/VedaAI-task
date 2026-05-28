@@ -183,7 +183,7 @@ export default function AssignmentsDashboardPage() {
               </div>
             ) : (
               /* Filled state dashboard */
-              <div className="w-full flex flex-col gap-6 animate-in fade-in duration-200">
+              <div className="w-full max-w-[1100px] flex flex-col gap-6 animate-in fade-in duration-200">
                 {/* Header title */}
                 <div className="flex items-start gap-3">
                   <div className="w-6 h-6 rounded-full bg-[#34C759]/20 flex items-center justify-center shrink-0 mt-0.5">
