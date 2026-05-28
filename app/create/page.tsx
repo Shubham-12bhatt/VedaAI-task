@@ -421,26 +421,23 @@ export default function CreateAssignmentPage() {
                 }
                 setIsMobileMenuOpen(false);
               }}
-              className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-[12px] transition-all duration-150 text-left font-bricolage text-[16px] font-normal tracking-[-0.04em] leading-[1.4] cursor-pointer ${
-                item.active && !isCreating
-                  ? "bg-[#F1F1F1] text-[#1F1F1F]"
-                  : "text-[#5E5E5E] hover:bg-[#F9F9F9] hover:text-[#1F1F1F]"
-              }`}
+              className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-[12px] transition-all duration-150 text-left font-bricolage text-[16px] font-normal tracking-[-0.04em] leading-[1.4] cursor-pointer ${item.active && !isCreating
+                ? "bg-[#F1F1F1] text-[#1F1F1F]"
+                : "text-[#5E5E5E] hover:bg-[#F9F9F9] hover:text-[#1F1F1F]"
+                }`}
             >
               {item.type === "custom" ? (
                 <img
                   src={item.icon as string}
                   alt={item.name}
-                  className={`w-[18px] h-[18px] object-contain shrink-0 transition-opacity duration-150 ${
-                    item.active && !isCreating ? "opacity-100" : "opacity-60 hover:opacity-100"
-                  }`}
+                  className={`w-[18px] h-[18px] object-contain shrink-0 transition-opacity duration-150 ${item.active && !isCreating ? "opacity-100" : "opacity-60 hover:opacity-100"
+                    }`}
                 />
               ) : (
                 React.createElement(item.icon as React.ComponentType<any>, {
                   size: 18,
-                  className: `shrink-0 ${
-                    item.active && !isCreating ? "text-[#1F1F1F]" : "text-[#8E8E93]"
-                  }`,
+                  className: `shrink-0 ${item.active && !isCreating ? "text-[#1F1F1F]" : "text-[#8E8E93]"
+                    }`,
                 })
               )}
               <span className="flex-1">{item.name}</span>
@@ -637,11 +634,10 @@ export default function CreateAssignmentPage() {
 
           {/* MAIN CONTENT AREA */}
           <main
-            className={`w-full flex-1 min-h-0 md:h-[678px] md:max-h-[678px] ${
-              generatedAssignment
-                ? "flex flex-col bg-[#4A4A4A] rounded-[24px] p-6 overflow-y-auto thin-scrollbar"
-                : "overflow-y-auto pr-1 pb-6 md:pb-6 thin-scrollbar"
-            }`}
+            className={`w-full flex-1 min-h-0 md:h-[678px] md:max-h-[678px] ${generatedAssignment
+              ? "flex flex-col bg-[#4A4A4A] rounded-[24px] p-6 overflow-y-auto thin-scrollbar"
+              : "overflow-y-auto pr-1 pb-6 md:pb-6 thin-scrollbar"
+              }`}
           >
             {generatedAssignment ? (
               <GeneratedQuestionPaperView
@@ -672,9 +668,8 @@ export default function CreateAssignmentPage() {
                 <div className="w-full max-w-[810px] flex items-center gap-2.5 px-0.5">
                   <div className="h-[3px] flex-1 rounded-full bg-[#1F1F1F] transition-all duration-300" />
                   <div
-                    className={`h-[3px] flex-1 rounded-full transition-all duration-300 ${
-                      currentStep >= 2 ? "bg-[#1F1F1F]" : "bg-[#CCCCCC]/60"
-                    }`}
+                    className={`h-[3px] flex-1 rounded-full transition-all duration-300 ${currentStep >= 2 ? "bg-[#1F1F1F]" : "bg-[#CCCCCC]/60"
+                      }`}
                   />
                 </div>
 
@@ -736,11 +731,10 @@ export default function CreateAssignmentPage() {
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             placeholder="e.g. Quiz on Electricity"
-                            className={`w-full h-[48px] px-4 rounded-[12px] bg-[#F1F1F1] text-[#1F1F1F] font-inter text-[15px] font-medium tracking-tight outline-none border transition-all duration-150 ${
-                              errors.title
-                                ? "border-red-500/80 focus:border-red-500 bg-red-50/10"
-                                : "border-transparent focus:bg-[#EAEAEA] focus:border-[#CCCCCC]"
-                            }`}
+                            className={`w-full h-[48px] px-4 rounded-[12px] bg-[#F1F1F1] text-[#1F1F1F] font-inter text-[15px] font-medium tracking-tight outline-none border transition-all duration-150 ${errors.title
+                              ? "border-red-500/80 focus:border-red-500 bg-red-50/10"
+                              : "border-transparent focus:bg-[#EAEAEA] focus:border-[#CCCCCC]"
+                              }`}
                           />
                           {errors.title && (
                             <span className="text-[12px] font-medium text-red-500 mt-1 leading-none tracking-tight">
@@ -828,11 +822,10 @@ export default function CreateAssignmentPage() {
                             <button
                               type="button"
                               onClick={handleSpeechInput}
-                              className={`absolute right-4 bottom-4 w-9 h-9 rounded-full flex items-center justify-center border shadow-sm transition-all duration-200 cursor-pointer ${
-                                isListening
-                                  ? "bg-red-500 text-white border-red-400 animate-pulse scale-105"
-                                  : "bg-white text-[#1F1F1F] border-neutral-100 hover:bg-[#F9F9F9]"
-                              }`}
+                              className={`absolute right-4 bottom-4 w-9 h-9 rounded-full flex items-center justify-center border shadow-sm transition-all duration-200 cursor-pointer ${isListening
+                                ? "bg-red-500 text-white border-red-400 animate-pulse scale-105"
+                                : "bg-white text-[#1F1F1F] border-neutral-100 hover:bg-[#F9F9F9]"
+                                }`}
                               title={isListening ? "Listening... click to stop" : "Start Voice Input"}
                             >
                               <Mic size={16} />
@@ -875,11 +868,10 @@ export default function CreateAssignmentPage() {
                                   key={level}
                                   type="button"
                                   onClick={() => setDifficulty(level)}
-                                  className={`h-[38px] px-5 rounded-full font-bricolage text-[14px] font-semibold tracking-tight transition-all active:scale-[0.98] cursor-pointer ${
-                                    active
-                                      ? "bg-[#1F1F1F] text-white shadow-md"
-                                      : "bg-[#F1F1F1] text-[#5E5E5E] hover:bg-[#EAEAEA] hover:text-[#1F1F1F]"
-                                  }`}
+                                  className={`h-[38px] px-5 rounded-full font-bricolage text-[14px] font-semibold tracking-tight transition-all active:scale-[0.98] cursor-pointer ${active
+                                    ? "bg-[#1F1F1F] text-white shadow-md"
+                                    : "bg-[#F1F1F1] text-[#5E5E5E] hover:bg-[#EAEAEA] hover:text-[#1F1F1F]"
+                                    }`}
                                 >
                                   {level}
                                 </button>
@@ -902,11 +894,10 @@ export default function CreateAssignmentPage() {
                                   key={time}
                                   type="button"
                                   onClick={() => setDuration(time)}
-                                  className={`h-[38px] px-5 rounded-full font-bricolage text-[14px] font-semibold tracking-tight transition-all active:scale-[0.98] cursor-pointer ${
-                                    active
-                                      ? "bg-[#1F1F1F] text-white shadow-md"
-                                      : "bg-[#F1F1F1] text-[#5E5E5E] hover:bg-[#EAEAEA] hover:text-[#1F1F1F]"
-                                  }`}
+                                  className={`h-[38px] px-5 rounded-full font-bricolage text-[14px] font-semibold tracking-tight transition-all active:scale-[0.98] cursor-pointer ${active
+                                    ? "bg-[#1F1F1F] text-white shadow-md"
+                                    : "bg-[#F1F1F1] text-[#5E5E5E] hover:bg-[#EAEAEA] hover:text-[#1F1F1F]"
+                                    }`}
                                 >
                                   {time}
                                 </button>
@@ -958,11 +949,10 @@ export default function CreateAssignmentPage() {
                                   key={sec.title}
                                   type="button"
                                   onClick={() => toggleSection(sec.title)}
-                                  className={`w-full text-left p-4 rounded-[16px] border flex items-center gap-4 transition-all duration-150 cursor-pointer ${
-                                    isIncluded
-                                      ? "bg-white border-[#1F1F1F] shadow-sm"
-                                      : "bg-[#FBFBFB]/50 border-neutral-100 hover:bg-[#F5F5F5]/60 hover:border-neutral-200"
-                                  }`}
+                                  className={`w-full text-left p-4 rounded-[16px] border flex items-center gap-4 transition-all duration-150 cursor-pointer ${isIncluded
+                                    ? "bg-white border-[#1F1F1F] shadow-sm"
+                                    : "bg-[#FBFBFB]/50 border-neutral-100 hover:bg-[#F5F5F5]/60 hover:border-neutral-200"
+                                    }`}
                                 >
                                   <div className="shrink-0 text-[#1F1F1F]">
                                     {isIncluded ? (
@@ -1005,11 +995,10 @@ export default function CreateAssignmentPage() {
                                   key={format}
                                   type="button"
                                   onClick={() => setOutputFormat(format)}
-                                  className={`h-[38px] px-5 rounded-full font-bricolage text-[14px] font-semibold tracking-tight transition-all active:scale-[0.98] cursor-pointer ${
-                                    active
-                                      ? "bg-[#1F1F1F] text-white shadow-md"
-                                      : "bg-[#F1F1F1] text-[#5E5E5E] hover:bg-[#EAEAEA] hover:text-[#1F1F1F]"
-                                  }`}
+                                  className={`h-[38px] px-5 rounded-full font-bricolage text-[14px] font-semibold tracking-tight transition-all active:scale-[0.98] cursor-pointer ${active
+                                    ? "bg-[#1F1F1F] text-white shadow-md"
+                                    : "bg-[#F1F1F1] text-[#5E5E5E] hover:bg-[#EAEAEA] hover:text-[#1F1F1F]"
+                                    }`}
                                 >
                                   {format}
                                 </button>
@@ -1109,9 +1098,8 @@ export default function CreateAssignmentPage() {
                           <span>Filter By</span>
                           <ChevronDown
                             size={14}
-                            className={`transition-transform duration-200 ${
-                              isFilterMenuOpen ? "rotate-180" : ""
-                            }`}
+                            className={`transition-transform duration-200 ${isFilterMenuOpen ? "rotate-180" : ""
+                              }`}
                           />
                         </button>
 
@@ -1126,11 +1114,10 @@ export default function CreateAssignmentPage() {
                                 <button
                                   type="button"
                                   onClick={() => setFilterDifficulty("All")}
-                                  className={`text-[12px] font-semibold px-2.5 py-1 rounded-full ${
-                                    filterDifficulty === "All"
-                                      ? "bg-[#1F1F1F] text-white"
-                                      : "bg-[#F1F1F1] text-neutral-500 hover:bg-[#EAEAEA]"
-                                  }`}
+                                  className={`text-[12px] font-semibold px-2.5 py-1 rounded-full ${filterDifficulty === "All"
+                                    ? "bg-[#1F1F1F] text-white"
+                                    : "bg-[#F1F1F1] text-neutral-500 hover:bg-[#EAEAEA]"
+                                    }`}
                                 >
                                   All
                                 </button>
@@ -1139,11 +1126,10 @@ export default function CreateAssignmentPage() {
                                     key={level}
                                     type="button"
                                     onClick={() => setFilterDifficulty(level)}
-                                    className={`text-[12px] font-semibold px-2.5 py-1 rounded-full ${
-                                      filterDifficulty === level
-                                        ? "bg-[#1F1F1F] text-white"
-                                        : "bg-[#F1F1F1] text-neutral-500 hover:bg-[#EAEAEA]"
-                                    }`}
+                                    className={`text-[12px] font-semibold px-2.5 py-1 rounded-full ${filterDifficulty === level
+                                      ? "bg-[#1F1F1F] text-white"
+                                      : "bg-[#F1F1F1] text-neutral-500 hover:bg-[#EAEAEA]"
+                                      }`}
                                   >
                                     {level}
                                   </button>
@@ -1162,11 +1148,10 @@ export default function CreateAssignmentPage() {
                                 <button
                                   type="button"
                                   onClick={() => setFilterFormat("All")}
-                                  className={`text-[12px] font-semibold px-3 py-1.5 rounded-lg text-left ${
-                                    filterFormat === "All"
-                                      ? "bg-[#1F1F1F] text-white"
-                                      : "hover:bg-[#F1F1F1] text-neutral-600"
-                                  }`}
+                                  className={`text-[12px] font-semibold px-3 py-1.5 rounded-lg text-left ${filterFormat === "All"
+                                    ? "bg-[#1F1F1F] text-white"
+                                    : "hover:bg-[#F1F1F1] text-neutral-600"
+                                    }`}
                                 >
                                   All Formats
                                 </button>
@@ -1177,11 +1162,10 @@ export default function CreateAssignmentPage() {
                                       key={format}
                                       type="button"
                                       onClick={() => setFilterFormat(format)}
-                                      className={`text-[12px] font-semibold px-3 py-1.5 rounded-lg text-left truncate ${
-                                        filterFormat === format
-                                          ? "bg-[#1F1F1F] text-white"
-                                          : "hover:bg-[#F1F1F1] text-neutral-600"
-                                      }`}
+                                      className={`text-[12px] font-semibold px-3 py-1.5 rounded-lg text-left truncate ${filterFormat === format
+                                        ? "bg-[#1F1F1F] text-white"
+                                        : "hover:bg-[#F1F1F1] text-neutral-600"
+                                        }`}
                                     >
                                       {format}
                                     </button>
