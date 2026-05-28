@@ -3,12 +3,11 @@
 AI-powered Assessment Creation Platform built for the VedaAI Full Stack Engineering Assignment.
 
 Live Demo: https://veda-ai-shubham.vercel.app/
-
 GitHub Repository: https://github.com/Shubham-12bhatt/VedaAI-task
 
 ---
 
-# 🚀 Overview
+## Overview
 
 VedaAI allows teachers to:
 
@@ -21,9 +20,9 @@ The platform focuses on clean UI, structured AI responses, and scalable backend 
 
 ---
 
-# ✨ Features
+## Features
 
-## 📄 Assignment Creation
+### Assignment Creation
 
 Teachers can configure:
 
@@ -42,7 +41,7 @@ Teachers can configure:
 
 ---
 
-# 🤖 AI Question Generation
+## AI Question Generation
 
 The system converts user input into structured prompts and generates:
 
@@ -53,7 +52,7 @@ The system converts user input into structured prompts and generates:
 
 ### AI Processing Flow
 
-```text id="kp0fd8"
+```text id="q6ykyr"
 Teacher Input
     ↓
 Prompt Structuring
@@ -72,7 +71,7 @@ The response is parsed into structured JSON before displaying.
 
 ---
 
-# ⚡ Real-Time Updates
+## Real-Time Updates
 
 Implemented using WebSockets for:
 
@@ -82,9 +81,9 @@ Implemented using WebSockets for:
 
 ---
 
-# 🛠 Tech Stack
+## Tech Stack
 
-## Frontend
+### Frontend
 
 * Next.js
 * TypeScript
@@ -92,7 +91,7 @@ Implemented using WebSockets for:
 * Zustand
 * Socket.IO Client
 
-## Backend
+### Backend
 
 * Node.js
 * Express.js
@@ -101,15 +100,15 @@ Implemented using WebSockets for:
 * BullMQ
 * Socket.IO
 
-## AI
+### AI
 
 * Groq API / OpenAI-compatible LLM
 
 ---
 
-# 🧩 System Architecture
+## System Architecture
 
-```text id="0ehjlwm"
+```text id="i8o2bx"
 Frontend
    ↓
 Express API
@@ -127,9 +126,9 @@ Frontend Rendering
 
 ---
 
-# 📂 Project Structure
+## Project Structure
 
-```bash id="4ce2c7"
+```bash id="ot5i52"
 VedaAI-task/
 │
 ├── frontend/
@@ -152,28 +151,28 @@ VedaAI-task/
 
 ---
 
-# 🎨 UI Highlights
+## UI Highlights
 
 * Figma-inspired implementation
 * Clean assessment layout
 * Difficulty badges
 * Responsive design
 * Structured sections
-* Real exam-paper inspired formatting
+* Exam-paper inspired formatting
 
 ---
 
-# 📄 Output Features
+## Output Features
 
 Generated papers include:
 
-## Student Information
+### Student Information
 
 * Name
 * Roll Number
 * Section
 
-## Question Sections
+### Question Sections
 
 Each section contains:
 
@@ -185,19 +184,17 @@ Each section contains:
 
 ---
 
-# ⚙️ Local Setup
+## Local Setup
 
-## Clone Repository
+### Clone Repository
 
-```bash id="2m2u0v"
+```bash id="jlwmmd"
 git clone https://github.com/Shubham-12bhatt/VedaAI-task.git
 ```
 
----
+### Frontend Setup
 
-## Frontend Setup
-
-```bash id="5zj2pj"
+```bash id="vgn67j"
 cd frontend
 
 npm install
@@ -205,11 +202,9 @@ npm install
 npm run dev
 ```
 
----
+### Backend Setup
 
-## Backend Setup
-
-```bash id="bsp4yf"
+```bash id="fhq9al"
 cd backend
 
 npm install
@@ -219,17 +214,17 @@ npm run dev
 
 ---
 
-# 🔐 Environment Variables
+## Environment Variables
 
-## Frontend `.env`
+### Frontend `.env`
 
-```env id="n3mw53"
+```env id="5m5j48"
 NEXT_PUBLIC_API_URL=http://localhost:5000
 ```
 
-## Backend `.env`
+### Backend `.env`
 
-```env id="9m4xv5"
+```env id="vjlwmh"
 PORT=5000
 
 MONGO_URI=your_mongodb_uri
@@ -242,23 +237,23 @@ GROQ_API_KEY=your_api_key
 
 ---
 
-# 📡 API Endpoints
+## API Endpoints
 
-## Create Assignment
+### Create Assignment
 
-```http id="9phq8f"
+```http id="9v4p58"
 POST /api/assignments
 ```
 
-## Get Assignment
+### Get Assignment
 
-```http id="0f3o5n"
+```http id="m5pg5m"
 GET /api/assignments/:id
 ```
 
 ---
 
-# 🔥 WebSocket Events
+## WebSocket Events
 
 | Event                | Description         |
 | -------------------- | ------------------- |
@@ -269,7 +264,7 @@ GET /api/assignments/:id
 
 ---
 
-# 📈 Scalability Features
+## Scalability Features
 
 * Queue-based processing using BullMQ
 * Redis-backed job management
@@ -278,7 +273,7 @@ GET /api/assignments/:id
 
 ---
 
-# 🔮 Future Improvements
+## Future Improvements
 
 * PDF Export
 * Authentication
@@ -289,7 +284,7 @@ GET /api/assignments/:id
 
 ---
 
-# 👨‍💻 Developer
+## Developer
 
 Shubham Bhatt
 
@@ -297,5 +292,6 @@ GitHub: https://github.com/Shubham-12bhatt
 
 ---
 
+## License
 
 Developed as part of the VedaAI Full Stack Engineering Assignment.
