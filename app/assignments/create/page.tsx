@@ -169,7 +169,7 @@ export default function CreateAssignmentPage() {
   const FORMAT_OPTIONS = ["PDF Document", "Word Document (.docx)", "Google Forms"];
 
   return (
-    <div className="min-h-screen w-full bg-[#E2E2E2] flex items-center justify-center p-0 md:p-6 overflow-y-auto overflow-x-hidden font-bricolage">
+    <div className="min-h-screen w-full bg-gradient-to-b from-[#EEEEEE] to-[#DADADA] flex items-center justify-center p-0 md:p-6 overflow-y-auto overflow-x-hidden font-bricolage">
       <div className="w-full min-h-screen md:min-h-0 md:w-[1440px] md:h-[780px] md:min-w-[1440px] md:max-h-[780px] bg-gradient-to-b from-[#EEEEEE] to-[#DADADA] md:rounded-[24px] shadow-2xl relative overflow-hidden flex flex-col md:flex-row p-3 gap-3">
 
         {/* LEFT SIDEBAR (Desktop) */}
