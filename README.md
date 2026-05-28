@@ -1,114 +1,301 @@
 # VedaAI – AI Assessment Creator
 
-An AI-powered assessment generation platform built using Next.js, TypeScript, Express, MongoDB, Redis, BullMQ, Socket.io, and Groq Llama 3.
+AI-powered Assessment Creation Platform built for the VedaAI Full Stack Engineering Assignment.
 
-This project allows teachers to create assignments, generate AI-based question papers, and manage assessments in a realtime and scalable architecture.
+Live Demo: https://veda-ai-shubham.vercel.app/
 
----
-
-# 🚀 Features
-
-## ✅ Assignment Creation
-
-- Create assignments using a clean UI
-- Add:
-  - Due date
-  - Question types
-  - Marks
-  - Difficulty level
-  - Instructions
-  - File upload support (PDF/TXT)
+GitHub Repository: https://github.com/Shubham-12bhatt/VedaAI-task
 
 ---
 
-## ✅ AI Question Generation
+# 🚀 Overview
 
-- AI-powered question paper generation using:
-  - Groq API
-  - Llama 3
-- Structured JSON response generation
-- Dynamic:
-  - Sections
-  - Questions
-  - Difficulty tags
-  - Marks
-  - Answer keys
+VedaAI allows teachers to:
+
+* Create assignments
+* Configure question patterns
+* Generate AI-powered question papers
+* View structured assessment output
+
+The platform focuses on clean UI, structured AI responses, and scalable backend architecture.
 
 ---
 
-## ✅ Realtime Processing
+# ✨ Features
 
-Implemented using:
+## 📄 Assignment Creation
 
-- BullMQ
-- Redis
-- Socket.io
+Teachers can configure:
 
-Realtime workflow:
-1. Assignment submitted
-2. Queue job created
-3. Worker processes AI generation
-4. MongoDB updated
-5. Frontend updated in realtime
+* Due Date
+* Question Types
+* Number of Questions
+* Marks Distribution
+* Additional Instructions
+* Optional File Upload
 
----
+### Validation
 
-## ✅ Dashboard
-
-- View all generated assignments
-- Assignment status tracking:
-  - Pending
-  - Processing
-  - Completed
-  - Failed
+* Required field validation
+* Invalid value prevention
+* Type-safe forms using TypeScript
 
 ---
 
-## ✅ PDF Export
+# 🤖 AI Question Generation
 
-- Download generated assessment as PDF
-- Styled printable format
+The system converts user input into structured prompts and generates:
+
+* Question Sections
+* Questions
+* Difficulty Levels
+* Marks Allocation
+
+### AI Processing Flow
+
+```text id="kp0fd8"
+Teacher Input
+    ↓
+Prompt Structuring
+    ↓
+LLM Generation
+    ↓
+Response Parsing
+    ↓
+Structured Assessment Output
+```
+
+### Important
+
+Raw AI responses are not directly rendered.
+The response is parsed into structured JSON before displaying.
 
 ---
 
-# 🏗️ Tech Stack
+# ⚡ Real-Time Updates
+
+Implemented using WebSockets for:
+
+* Live generation updates
+* Processing feedback
+* Better user experience
+
+---
+
+# 🛠 Tech Stack
 
 ## Frontend
-- Next.js 16
-- TypeScript
-- Tailwind CSS
-- Zustand
-- React Hook Form
-- Zod Validation
-- Socket.io Client
+
+* Next.js
+* TypeScript
+* Tailwind CSS
+* Zustand
+* Socket.IO Client
 
 ## Backend
-- Node.js
-- Express
-- MongoDB Atlas
-- Redis (Upstash)
-- BullMQ
-- Socket.io
-- TypeScript
+
+* Node.js
+* Express.js
+* MongoDB
+* Redis
+* BullMQ
+* Socket.IO
 
 ## AI
-- Groq API
-- Llama 3 (70B)
+
+* Groq API / OpenAI-compatible LLM
 
 ---
 
-# 🔄 Realtime Workflow
+# 🧩 System Architecture
 
-1. Teacher creates assignment
-2. Backend creates BullMQ job
-3. Redis stores job
-4. Worker processes AI generation
-5. MongoDB stores generated paper
-6. Socket.io emits realtime updates
-7. Frontend updates automatically
+```text id="0ehjlwm"
+Frontend
+   ↓
+Express API
+   ↓
+BullMQ Queue
+   ↓
+AI Worker
+   ↓
+MongoDB Storage
+   ↓
+WebSocket Updates
+   ↓
+Frontend Rendering
+```
+
+---
+
+# 📂 Project Structure
+
+```bash id="4ce2c7"
+VedaAI-task/
+│
+├── frontend/
+│   ├── app/
+│   ├── components/
+│   ├── store/
+│   ├── services/
+│   └── types/
+│
+├── backend/
+│   ├── controllers/
+│   ├── routes/
+│   ├── workers/
+│   ├── queues/
+│   ├── models/
+│   └── socket/
+│
+└── README.md
+```
+
+---
+
+# 🎨 UI Highlights
+
+* Figma-inspired implementation
+* Clean assessment layout
+* Difficulty badges
+* Responsive design
+* Structured sections
+* Real exam-paper inspired formatting
+
+---
+
+# 📄 Output Features
+
+Generated papers include:
+
+## Student Information
+
+* Name
+* Roll Number
+* Section
+
+## Question Sections
+
+Each section contains:
+
+* Section Title
+* Instructions
+* Questions
+* Marks
+* Difficulty Tags
+
+---
+
+# ⚙️ Local Setup
+
+## Clone Repository
+
+```bash id="2m2u0v"
+git clone https://github.com/Shubham-12bhatt/VedaAI-task.git
+```
+
+---
+
+## Frontend Setup
+
+```bash id="5zj2pj"
+cd frontend
+
+npm install
+
+npm run dev
+```
+
+---
+
+## Backend Setup
+
+```bash id="bsp4yf"
+cd backend
+
+npm install
+
+npm run dev
+```
+
+---
+
+# 🔐 Environment Variables
+
+## Frontend `.env`
+
+```env id="n3mw53"
+NEXT_PUBLIC_API_URL=http://localhost:5000
+```
+
+## Backend `.env`
+
+```env id="9m4xv5"
+PORT=5000
+
+MONGO_URI=your_mongodb_uri
+
+REDIS_HOST=localhost
+REDIS_PORT=6379
+
+GROQ_API_KEY=your_api_key
+```
+
+---
+
+# 📡 API Endpoints
+
+## Create Assignment
+
+```http id="9phq8f"
+POST /api/assignments
+```
+
+## Get Assignment
+
+```http id="0f3o5n"
+GET /api/assignments/:id
+```
+
+---
+
+# 🔥 WebSocket Events
+
+| Event                | Description         |
+| -------------------- | ------------------- |
+| generation-started   | Generation started  |
+| generation-progress  | Progress updates    |
+| generation-completed | Questions generated |
+| generation-failed    | Error handling      |
+
+---
+
+# 📈 Scalability Features
+
+* Queue-based processing using BullMQ
+* Redis-backed job management
+* Modular backend architecture
+* Real-time event communication
+
+---
+
+# 🔮 Future Improvements
+
+* PDF Export
+* Authentication
+* Teacher Dashboard
+* Regenerate Questions
+* Assignment History
+* Multi-language Support
+
+---
+
+# 👨‍💻 Developer
+
+Shubham Bhatt
+
+GitHub: https://github.com/Shubham-12bhatt
 
 ---
 
 
-```
-```
+Developed as part of the VedaAI Full Stack Engineering Assignment.
