@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { MoreVertical, Eye, Trash2 } from "lucide-react";
-import { Assignment } from "@/app/create/assignmentStore";
+import { Assignment } from "@/app/assignments/assignmentStore";
 
 interface AssignmentCardProps {
   assignment: Assignment;

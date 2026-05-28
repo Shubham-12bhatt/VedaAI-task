@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import { Upload, X, FileText, CheckCircle2 } from "lucide-react";
-import { FileData } from "@/app/create/assignmentStore";
+import { FileData } from "@/app/assignments/assignmentStore";
 
 interface FileUploadZoneProps {
   value: FileData | null;

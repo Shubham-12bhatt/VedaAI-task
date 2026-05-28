@@ -3,10 +3,10 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-export default function CreateRedirectPage() {
+export default function RootPage() {
   const router = useRouter();
   useEffect(() => {
-    router.replace("/assignments/create");
+    router.replace("/assignments");
   }, [router]);
 
   return null;

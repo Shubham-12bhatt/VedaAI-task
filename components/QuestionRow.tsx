@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { ChevronDown, X, Minus, Plus } from "lucide-react";
-import { QuestionRowType } from "@/app/create/assignmentStore";
+import { QuestionRowType } from "@/app/assignments/assignmentStore";
 
 interface QuestionRowProps {
   row: QuestionRowType;

@@ -87,6 +87,12 @@ interface AssignmentStore {
   generatedAssignment: Assignment | null;
   pdfGenerationState: 'idle' | 'generating' | 'success' | 'error';
 
+  // AI Assessment State
+  selectedQuestionId: string | null;
+  assessmentToggles: Record<string, boolean>;
+  assessmentRubrics: Record<string, string[]>;
+  assessmentExplanations: Record<string, string>;
+
   // Actions
   setCreating: (isCreating: boolean) => void;
   setStep: (step: number) => void;
@@ -116,6 +122,11 @@ interface AssignmentStore {
   updateQuestionRow: (id: string, updates: Partial<Omit<QuestionRowType, "id">>) => void;
   deleteQuestionRow: (id: string) => void;
   
+  setSelectedQuestionId: (id: string | null) => void;
+  setAssessmentToggle: (questionId: string, enabled: boolean) => void;
+  setAssessmentRubrics: (questionId: string, rubrics: string[]) => void;
+  setAssessmentExplanation: (questionId: string, explanation: string) => void;
+
   // Store Actions
   resetForm: () => void;
   validateStep: (step: number) => boolean;
@@ -201,7 +212,7 @@ export function generateQuestionsForAssignment(
   let subject = "English";
   let className = "Class: 5th";
   
-  if (topicLower.includes("electric") || topicLower.includes("magnet") || topicLower.includes("mechanic") || topicLower.includes("physics") || topicLower.includes("science")) {
+  if (topicLower.includes("electric") || topicLower.includes("magnet") || topicLower.includes("mechanic") || topicLower.includes("physics") || topicLower.includes("science") || topicLower.includes("photosynthesis")) {
     subject = "Science";
     className = "Class: 8th";
   } else if (topicLower.includes("math") || topicLower.includes("algebra") || topicLower.includes("calculus") || topicLower.includes("geometry")) {
@@ -390,6 +401,12 @@ export const useAssignmentStore = create<AssignmentStore>((set, get) => ({
   
   errors: {},
 
+  // AI Assessment State Initial
+  selectedQuestionId: null,
+  assessmentToggles: {},
+  assessmentRubrics: {},
+  assessmentExplanations: {},
+
   setCreating: (isCreating) => set({ isCreating }),
   setStep: (currentStep) => set({ currentStep }),
   setTitle: (title) => set((state) => ({ 
@@ -398,6 +415,18 @@ export const useAssignmentStore = create<AssignmentStore>((set, get) => ({
   })),
   setGeneratedAssignment: (generatedAssignment) => set({ generatedAssignment }),
   setPdfGenerationState: (pdfGenerationState) => set({ pdfGenerationState }),
+  
+  setSelectedQuestionId: (selectedQuestionId) => set({ selectedQuestionId }),
+  setAssessmentToggle: (questionId, enabled) => set((state) => ({
+    assessmentToggles: { ...state.assessmentToggles, [questionId]: enabled }
+  })),
+  setAssessmentRubrics: (questionId, rubrics) => set((state) => ({
+    assessmentRubrics: { ...state.assessmentRubrics, [questionId]: rubrics }
+  })),
+  setAssessmentExplanation: (questionId, explanation) => set((state) => ({
+    assessmentExplanations: { ...state.assessmentExplanations, [questionId]: explanation }
+  })),
+
   setFile: (file) => set((state) => {
     // Auto prefill title from file name if it's currently empty
     const autoTitle = file && !state.title 
@@ -483,6 +512,12 @@ export const useAssignmentStore = create<AssignmentStore>((set, get) => ({
     outputFormat: "PDF Document",
     
     errors: {},
+
+    // Reset AI Assessment State
+    selectedQuestionId: null,
+    assessmentToggles: {},
+    assessmentRubrics: {},
+    assessmentExplanations: {},
   }),
 
   validateStep: (step) => {
