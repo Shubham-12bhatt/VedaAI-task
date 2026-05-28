@@ -40,6 +40,7 @@ export interface Assignment {
   totalQuestions: number;
   totalMarks: number;
   createdAt: string; // E.g., Assigned on date
+  status?: string;
 
   // Output rendering fields
   questions?: QuestionType[];

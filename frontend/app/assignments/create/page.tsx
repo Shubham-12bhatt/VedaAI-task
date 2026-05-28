@@ -94,24 +94,20 @@ export default function CreateAssignmentPage() {
         setIsGenerating(true);
         setGenerationStep(0);
 
-        const t1 = setTimeout(() => setGenerationStep(1), 1200);
-        const t2 = setTimeout(() => setGenerationStep(2), 2600);
-        const t3 = setTimeout(() => {
-          createAssignment();
-          const newAsm = useAssignmentStore.getState().assignments[0];
-          setIsGenerating(false);
-          if (newAsm) {
-            router.push(`/assignments/output/${newAsm.id}`);
-          } else {
-            router.push("/assignments");
-          }
-        }, 4200);
-
-        return () => {
-          clearTimeout(t1);
-          clearTimeout(t2);
-          clearTimeout(t3);
-        };
+        createAssignment(setGenerationStep)
+          .then((newAsm) => {
+            setIsGenerating(false);
+            if (newAsm) {
+              router.push(`/assignments/output/${newAsm.id}`);
+            } else {
+              router.push("/assignments");
+            }
+          })
+          .catch((err) => {
+            console.error("Assignment generation failed:", err);
+            alert(`Generation failed: ${err.message || err}`);
+            setIsGenerating(false);
+          });
       }
     }
   };
@@ -169,11 +165,9 @@ export default function CreateAssignmentPage() {
   const FORMAT_OPTIONS = ["PDF Document", "Word Document (.docx)", "Google Forms"];
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-b from-[#EEEEEE] to-[#DADADA] flex items-center justify-center p-0 md:p-6 overflow-y-auto overflow-x-hidden font-bricolage">
-      <div className="w-full min-h-screen md:min-h-0 md:w-[1440px] md:h-[780px] md:min-w-[1440px] md:max-h-[780px] bg-gradient-to-b from-[#EEEEEE] to-[#DADADA] md:rounded-[24px] shadow-2xl relative overflow-hidden flex flex-col md:flex-row p-3 gap-3">
-
-        {/* LEFT SIDEBAR (Desktop) */}
-        <aside className="hidden md:flex flex-col w-[304px] h-[756px] bg-white rounded-[16px] p-6 card-shadow shrink-0">
+    <div className="h-screen w-full bg-gradient-to-b from-[#EEEEEE] to-[#DADADA] flex p-3 gap-3 overflow-hidden font-bricolage">
+      {/* LEFT SIDEBAR (Desktop) */}
+      <aside className="hidden md:flex flex-col w-[304px] h-full bg-white rounded-[16px] p-6 card-shadow shrink-0">
           <Sidebar />
         </aside>
 
@@ -198,8 +192,8 @@ export default function CreateAssignmentPage() {
           </div>
         )}
 
-        {/* RIGHT CONTENT COLUMN */}
-        <div className="flex flex-col flex-1 h-full md:h-[756px] gap-[22px] min-w-0 relative">
+      {/* RIGHT CONTENT COLUMN */}
+      <div className="flex flex-col flex-1 h-full gap-[22px] min-w-0 relative">
 
           {/* TOP NAVBAR */}
           <header className="w-full h-[56px] bg-white rounded-[16px] pl-6 pr-3 flex items-center justify-between navbar-shadow shrink-0">
@@ -251,7 +245,7 @@ export default function CreateAssignmentPage() {
           </header>
 
           {/* MAIN CONTENT AREA */}
-          <main className="w-full flex-1 min-h-0 md:h-[678px] md:max-h-[678px] overflow-y-auto pr-1 pb-6 md:pb-6 thin-scrollbar">
+        <main className="w-full flex-1 min-h-0 overflow-y-auto pr-1 pb-6 md:pb-6 thin-scrollbar">
             <div className="w-full px-4 pt-1 pb-10 flex flex-col items-center gap-6 animate-in fade-in slide-in-from-bottom-3 duration-250">
 
               {/* Form Title & Subtitle Header */}
@@ -655,6 +649,5 @@ export default function CreateAssignmentPage() {
           </main>
         </div>
       </div>
-    </div>
-  );
+    );
 }

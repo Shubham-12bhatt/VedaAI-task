@@ -242,18 +242,30 @@ export default function AIEvaluationPage() {
     assignments,
     pdfGenerationState,
     setPdfGenerationState,
+    fetchAssignmentById,
   } = useAssignmentStore();
 
   const assignment = assignments.find((asm) => asm.id === id);
+  const [isFetching, setIsFetching] = useState(!assignment);
 
-  // If the assignment is not found, redirect back to assignments dashboard
   useEffect(() => {
-    if (!assignment && assignments.length > 0) {
-      router.push("/assignments");
+    if (!assignment) {
+      setIsFetching(true);
+      fetchAssignmentById(id)
+        .then((asm) => {
+          setIsFetching(false);
+          if (!asm) {
+            router.push("/assignments");
+          }
+        })
+        .catch(() => {
+          setIsFetching(false);
+          router.push("/assignments");
+        });
     }
-  }, [assignment, assignments]);
+  }, [assignment, id, fetchAssignmentById, router]);
 
-  if (!assignment) {
+  if (isFetching || !assignment) {
     return (
       <div className="min-h-screen w-full bg-[#E2E2E2] flex items-center justify-center font-bricolage">
         <div className="text-center p-6 bg-white rounded-[24px] shadow-lg">
@@ -318,11 +330,9 @@ export default function AIEvaluationPage() {
     `This quiz on ${assignment.subject || "photosynthesis"} features multiple choice and short answer questions designed to test knowledge on the topic. Perfect for engaging students in learning about this essential process.`;
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-b from-[#EEEEEE] to-[#DADADA] flex items-center justify-center p-0 md:p-6 overflow-y-auto overflow-x-hidden font-bricolage">
-      <div className="w-full min-h-screen md:min-h-0 md:w-[1440px] md:h-[780px] md:min-w-[1440px] md:max-h-[780px] bg-gradient-to-b from-[#EEEEEE] to-[#DADADA] md:rounded-[24px] shadow-2xl relative overflow-hidden flex flex-col md:flex-row p-3 gap-3">
-        
-        {/* LEFT SIDEBAR (Desktop) */}
-        <aside className="hidden md:flex flex-col w-[304px] h-[756px] bg-white rounded-[16px] p-6 card-shadow shrink-0">
+    <div className="h-screen w-full bg-gradient-to-b from-[#EEEEEE] to-[#DADADA] flex p-3 gap-3 overflow-hidden font-bricolage">
+      {/* LEFT SIDEBAR (Desktop) */}
+      <aside className="hidden md:flex flex-col w-[304px] h-full bg-white rounded-[16px] p-6 card-shadow shrink-0">
           <Sidebar />
         </aside>
 
@@ -347,8 +357,8 @@ export default function AIEvaluationPage() {
           </div>
         )}
 
-        {/* RIGHT CONTENT COLUMN */}
-        <div className="flex flex-col flex-1 h-full md:h-[756px] gap-[22px] min-w-0 relative">
+      {/* RIGHT CONTENT COLUMN */}
+      <div className="flex flex-col flex-1 h-full gap-[22px] min-w-0 relative">
           
           {/* TOP NAVBAR */}
           <header className="w-full h-[56px] bg-white rounded-[16px] pl-6 pr-3 flex items-center justify-between navbar-shadow shrink-0">
@@ -407,7 +417,7 @@ export default function AIEvaluationPage() {
           </header>
 
           {/* MAIN CONTENT AREA */}
-          <main className="w-full flex-1 min-h-0 md:h-[678px] md:max-h-[678px] overflow-hidden flex flex-col gap-[22px]">
+          <main className="w-full flex-1 min-h-0 overflow-hidden flex flex-col gap-[22px]">
             
             {/* Top Summary Card (Sit on light gray background) */}
             <div className="w-full bg-white rounded-[24px] p-6 border border-[#EBEBEB] shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 relative text-[#1F1F1F] shrink-0">
@@ -477,6 +487,5 @@ export default function AIEvaluationPage() {
           </main>
         </div>
       </div>
-    </div>
-  );
+    );
 }

@@ -1,6 +1,60 @@
 import { create } from "zustand";
 import { Assignment, FileData, QuestionRowType, FormErrors } from "@/types/assignment";
 import { QuestionType } from "@/types/questionPaper";
+import axios from "axios";
+import { io, Socket } from "socket.io-client";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+const api = axios.create({
+  baseURL: `${API_URL}/api`,
+});
+
+let socket: Socket | null = null;
+const getSocket = (): Socket => {
+  if (!socket) {
+    socket = io(API_URL);
+  }
+  return socket;
+};
+
+function mapBackendAssignment(doc: any): Assignment {
+  return {
+    id: doc._id || doc.id,
+    title: doc.title,
+    file: doc.file || null,
+    dueDate: doc.dueDate,
+    questionRows: (doc.questionTypes || []).map((row: any) => ({
+      id: row.id,
+      type: row.type,
+      numQuestions: row.numQuestions,
+      marks: row.marks,
+    })),
+    additionalInfo: doc.additionalInfo || "",
+    difficulty: doc.difficulty || "Medium",
+    duration: doc.duration || "2 Hours",
+    customDuration: doc.customDuration || "",
+    sections: doc.sections || [],
+    outputFormat: doc.outputFormat || "PDF Document",
+    totalQuestions: doc.totalQuestions || 0,
+    totalMarks: doc.totalMarks || 0,
+    createdAt: doc.createdAt
+      ? new Date(doc.createdAt).toLocaleDateString("en-IN", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }).replace(/\//g, "-")
+      : new Date().toLocaleDateString("en-IN", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }).replace(/\//g, "-"),
+    questions: doc.generatedPaper?.questions || [],
+    subject: doc.generatedPaper?.subject || "",
+    className: doc.generatedPaper?.className || "",
+    status: doc.status,
+  } as any;
+}
 
 export interface AssignmentStore {
   // Store core lists and states
@@ -51,6 +105,10 @@ export interface AssignmentStore {
   setLoading: (loading: boolean) => void;
   setGenerationStatus: (status: string) => void;
 
+  // API Actions
+  fetchAssignments: () => Promise<void>;
+  fetchAssignmentById: (id: string) => Promise<Assignment | null>;
+
   // Form actions and setters (UI backward compatibility)
   setCreating: (isCreating: boolean) => void;
   setStep: (step: number) => void;
@@ -70,7 +128,7 @@ export interface AssignmentStore {
   setSearchQuery: (query: string) => void;
   setFilterDifficulty: (difficulty: string) => void;
   setFilterFormat: (format: string) => void;
-  deleteAssignment: (id: string) => void;
+  deleteAssignment: (id: string) => Promise<boolean>;
 
   // Step 2 Actions
   setDifficulty: (difficulty: string) => void;
@@ -88,7 +146,7 @@ export interface AssignmentStore {
   // Form execution actions
   resetForm: () => void;
   validateStep: (step: number) => boolean;
-  createAssignment: () => boolean;
+  createAssignment: (onStepChange?: (step: number) => void) => Promise<Assignment | null>;
 }
 
 const DEFAULT_ROWS: QuestionRowType[] = [
@@ -311,7 +369,7 @@ const MOCK_ASSIGNMENTS: Assignment[] = [
 
 export const useAssignmentStore = create<AssignmentStore>((set, get) => ({
   // Core lists and states
-  assignments: MOCK_ASSIGNMENTS,
+  assignments: [],
   selectedAssignment: null,
   generatedAssignment: null,
   generatedQuestionPaper: null,
@@ -371,6 +429,36 @@ export const useAssignmentStore = create<AssignmentStore>((set, get) => ({
 
   setGenerationStatus: (generationStatus) => set({ generationStatus }),
 
+  fetchAssignments: async () => {
+    set({ loading: true, isLoading: true });
+    try {
+      const response = await api.get("/assignments");
+      const mapped = response.data.map(mapBackendAssignment);
+      set({ assignments: mapped, loading: false, isLoading: false });
+    } catch (error) {
+      console.error("Failed to fetch assignments:", error);
+      set({ loading: false, isLoading: false });
+    }
+  },
+
+  fetchAssignmentById: async (id: string) => {
+    try {
+      const response = await api.get(`/assignments/${id}`);
+      const mapped = mapBackendAssignment(response.data);
+      set((state) => {
+        const exists = state.assignments.some((asm) => asm.id === id);
+        const updated = exists
+          ? state.assignments.map((asm) => (asm.id === id ? mapped : asm))
+          : [...state.assignments, mapped];
+        return { assignments: updated };
+      });
+      return mapped;
+    } catch (error) {
+      console.error(`Failed to fetch assignment ${id}:`, error);
+      return null;
+    }
+  },
+
   // Backward compatible setters
   setCreating: (isCreating) => set({ isCreating }),
   setStep: (currentStep) => set({ currentStep }),
@@ -403,9 +491,18 @@ export const useAssignmentStore = create<AssignmentStore>((set, get) => ({
   setSearchQuery: (searchQuery) => set({ searchQuery }),
   setFilterDifficulty: (filterDifficulty) => set({ filterDifficulty }),
   setFilterFormat: (filterFormat) => set({ filterFormat }),
-  deleteAssignment: (id) => set((state) => ({
-    assignments: state.assignments.filter((asm) => asm.id !== id),
-  })),
+  deleteAssignment: async (id) => {
+    try {
+      await api.delete(`/assignments/${id}`);
+      set((state) => ({
+        assignments: state.assignments.filter((asm) => asm.id !== id),
+      }));
+      return true;
+    } catch (error) {
+      console.error(`Failed to delete assignment ${id}:`, error);
+      return false;
+    }
+  },
 
   // Step 2 actions
   setDifficulty: (difficulty) => set({ difficulty }),
@@ -519,7 +616,7 @@ export const useAssignmentStore = create<AssignmentStore>((set, get) => ({
     return isValid;
   },
 
-  createAssignment: () => {
+  createAssignment: async (onStepChange) => {
     const {
       title,
       file,
@@ -531,56 +628,89 @@ export const useAssignmentStore = create<AssignmentStore>((set, get) => ({
       customDuration,
       sections,
       outputFormat,
-      assignments,
     } = get();
 
-    const totalQuestions = questionRows.reduce((sum, row) => sum + row.numQuestions, 0);
-    const totalMarks = questionRows.reduce((sum, row) => sum + row.numQuestions * row.marks, 0);
+    set({ loading: true, isLoading: true });
 
-    const assignmentTitle =
-      title.trim() ||
-      (file ? file.name.substring(0, file.name.lastIndexOf(".")) || file.name : "New Assignment");
+    try {
+      const response = await api.post("/assignments", {
+        title: title.trim(),
+        dueDate,
+        sections,
+        questionRows,
+        additionalInfo,
+        difficulty,
+        duration,
+        customDuration,
+        outputFormat,
+        file,
+      });
 
-    const { questions, subject, className } = generateQuestionsForAssignment(
-      questionRows,
-      difficulty,
-      assignmentTitle
-    );
+      const newAsm = mapBackendAssignment(response.data);
 
-    const newAssignment: Assignment = {
-      id: "Q" + Math.random().toString(36).substring(2, 6).toUpperCase(),
-      title: assignmentTitle,
-      file,
-      dueDate,
-      questionRows,
-      additionalInfo,
-      difficulty,
-      duration,
-      customDuration,
-      sections,
-      outputFormat,
-      totalQuestions,
-      totalMarks,
-      createdAt: new Date()
-        .toLocaleDateString("en-IN", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        })
-        .replace(/\//g, "-"),
-      questions,
-      subject,
-      className,
-    };
+      set((state) => ({
+        assignments: [newAsm, ...state.assignments],
+        generatedAssignment: newAsm,
+        generatedQuestionPaper: newAsm,
+      }));
 
-    set((state) => ({
-      assignments: [newAssignment, ...state.assignments],
-      generatedAssignment: newAssignment,
-      generatedQuestionPaper: newAssignment,
-      isCreating: false,
-    }));
+      onStepChange?.(0);
 
-    get().resetForm();
-    return true;
+      return new Promise<Assignment>((resolve, reject) => {
+        const s = getSocket();
+        
+        s.emit("join-assignment", newAsm.id);
+
+        const handleStatusUpdate = (data: any) => {
+          console.log("WebSocket received status-update:", data);
+          if (data.assignmentId !== newAsm.id) return;
+
+          if (data.status === "processing") {
+            onStepChange?.(1);
+            set({ generationStatus: "processing" });
+          } else if (data.status === "completed") {
+            onStepChange?.(2);
+            set({ generationStatus: "completed" });
+
+            api.get(`/assignments/${newAsm.id}`)
+              .then((res) => {
+                const finalAsm = mapBackendAssignment(res.data);
+                set((state) => ({
+                  assignments: state.assignments.map((asm) => (asm.id === finalAsm.id ? finalAsm : asm)),
+                  generatedAssignment: finalAsm,
+                  generatedQuestionPaper: finalAsm,
+                  loading: false,
+                  isLoading: false,
+                  isCreating: false,
+                }));
+                
+                s.off("status-update", handleStatusUpdate);
+                get().resetForm();
+                resolve(finalAsm);
+              })
+              .catch((err) => {
+                s.off("status-update", handleStatusUpdate);
+                set({ loading: false, isLoading: false });
+                reject(err);
+              });
+          } else if (data.status === "failed") {
+            set({ generationStatus: "failed", loading: false, isLoading: false });
+            s.off("status-update", handleStatusUpdate);
+            reject(new Error(data.error || "Generation failed on backend"));
+          }
+        };
+
+        s.on("status-update", handleStatusUpdate);
+
+        setTimeout(() => {
+          s.off("status-update", handleStatusUpdate);
+          set({ loading: false, isLoading: false });
+          reject(new Error("Generation timed out."));
+        }, 45000);
+      });
+    } catch (err: any) {
+      set({ loading: false, isLoading: false });
+      throw err;
+    }
   },
 }));

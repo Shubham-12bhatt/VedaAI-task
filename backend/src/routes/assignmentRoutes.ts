@@ -12,4 +12,7 @@ router.get("/:id", assignmentController.getAssignmentById);
 // Submit a new assignment for creation and generation
 router.post("/", assignmentController.createAssignment);
 
+// Delete an assignment
+router.delete("/:id", assignmentController.deleteAssignment);
+
 export default router;

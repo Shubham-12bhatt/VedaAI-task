@@ -33,7 +33,12 @@ export default function AssignmentsDashboardPage() {
     deleteAssignment,
     setCreating,
     resetForm,
+    fetchAssignments,
   } = useAssignmentStore();
+
+  useEffect(() => {
+    fetchAssignments();
+  }, [fetchAssignments]);
 
   // Close filter dropdown on click outside
   useEffect(() => {
@@ -69,11 +74,9 @@ export default function AssignmentsDashboardPage() {
   const FORMAT_OPTIONS = ["PDF Document", "Word Document (.docx)", "Google Forms"];
 
   return (
-    <div className="min-h-screen w-full bg-[#E2E2E2] flex items-center justify-center p-0 md:p-6 overflow-y-auto overflow-x-hidden font-bricolage">
-      <div className="w-full min-h-screen md:min-h-0 md:w-[1440px] md:h-[780px] md:min-w-[1440px] md:max-h-[780px] bg-gradient-to-b from-[#EEEEEE] to-[#DADADA] md:rounded-[24px] shadow-2xl relative overflow-hidden flex flex-col md:flex-row p-3 gap-3">
-
-        {/* LEFT SIDEBAR (Desktop) */}
-        <aside className="hidden md:flex flex-col w-[304px] h-[756px] bg-white rounded-[16px] p-6 card-shadow shrink-0">
+    <div className="h-screen w-full bg-gradient-to-b from-[#EEEEEE] to-[#DADADA] flex p-3 gap-3 overflow-hidden font-bricolage">
+      {/* LEFT SIDEBAR (Desktop) */}
+      <aside className="hidden md:flex flex-col w-[304px] h-full bg-white rounded-[16px] p-6 card-shadow shrink-0">
           <Sidebar />
         </aside>
 
@@ -100,8 +103,8 @@ export default function AssignmentsDashboardPage() {
           </div>
         )}
 
-        {/* RIGHT CONTENT COLUMN */}
-        <div className="flex flex-col flex-1 h-full md:h-[756px] gap-[22px] min-w-0 relative">
+      {/* RIGHT CONTENT COLUMN */}
+      <div className="flex flex-col flex-1 h-full gap-[22px] min-w-0 relative">
 
           {/* TOP NAVBAR */}
           <header className="w-full h-[56px] bg-white rounded-[16px] pl-6 pr-3 flex items-center justify-between navbar-shadow shrink-0">
@@ -153,7 +156,7 @@ export default function AssignmentsDashboardPage() {
           </header>
 
           {/* MAIN CONTENT AREA */}
-          <main className="w-full flex-1 min-h-0 md:h-[678px] md:max-h-[678px] overflow-y-auto pr-1 pb-6 md:pb-6 thin-scrollbar">
+        <main className="w-full flex-1 min-h-0 overflow-y-auto pr-1 pb-6 md:pb-6 thin-scrollbar">
 
             {assignments.length === 0 ? (
               /* Empty state dashboard */
@@ -364,6 +367,5 @@ export default function AssignmentsDashboardPage() {
           </main>
         </div>
       </div>
-    </div>
-  );
+    );
 }

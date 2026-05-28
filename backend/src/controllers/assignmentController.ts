@@ -114,5 +114,22 @@ export const assignmentController = {
       next(error);
     }
   },
+
+  /**
+   * Deletes a specific assignment by its MongoDB ID.
+   */
+  deleteAssignment: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { id } = req.params;
+      const deleted = await Assignment.findByIdAndDelete(id);
+      if (!deleted) {
+        res.status(404).json({ error: "Assignment not found" });
+        return;
+      }
+      res.status(200).json({ success: true, message: "Assignment deleted successfully" });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
 export default assignmentController;
