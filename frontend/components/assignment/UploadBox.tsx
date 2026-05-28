@@ -3,6 +3,7 @@
 import React, { useState, useRef } from "react";
 import { Upload, X, FileText, CheckCircle2 } from "lucide-react";
 import { FileData } from "@/types/assignment";
+import { toast } from "sonner";
 
 interface UploadBoxProps {
   value: FileData | null;
@@ -26,12 +27,12 @@ export default function UploadBox({ value, onChange, error }: UploadBoxProps) {
       allowedMimeTypes.includes(file.type) || allowedExtensions.includes(fileExtension);
 
     if (!isValidType) {
-      alert("Invalid file format. Only PDF and TXT files are allowed.");
+      toast.error("Invalid file format. Only PDF and TXT files are allowed.");
       return;
     }
 
     if (file.size > maxSizeBytes) {
-      alert("File size exceeds the 10MB limit.");
+      toast.error("File size exceeds the 10MB limit.");
       return;
     }
 

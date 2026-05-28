@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { useAssignmentStore, Assignment } from "@/app/assignments/assignmentStore";
+import { toast } from "sonner";
 
 export default function QuestionPaperPage() {
   const router = useRouter();
@@ -237,7 +238,7 @@ export default function QuestionPaperPage() {
 
             <div className="flex items-center gap-4">
               <button
-                onClick={() => alert("No new notifications")}
+                onClick={() => toast.info("No new notifications")}
                 className="w-9 h-9 flex items-center justify-center hover:bg-[#F1F1F1] rounded-full relative transition-all duration-200 cursor-pointer"
               >
                 <Bell size={18} className="text-[#1F1F1F]" />
@@ -298,33 +299,6 @@ export default function QuestionPaperPage() {
                         <span>Download as PDF</span>
                       </>
                     )}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleAIAssessmentClick}
-                    className="h-[38px] px-5 rounded-full font-bricolage text-[13px] font-bold text-white bg-white/10 hover:bg-white/20 flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-[0.98] transition-all select-none border border-white/5"
-                  >
-                    <Sparkles size={14} fill="white" className="text-white shrink-0 animate-pulse" />
-                    <span>AI Assessment</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => alert("Edit quiz details...")}
-                    className="h-[38px] px-5 rounded-full font-bricolage text-[13px] font-semibold text-white bg-transparent border border-white/25 hover:bg-white/10 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-[0.98] transition-all select-none"
-                  >
-                    <Pencil size={14} className="text-white" />
-                    <span>Edit</span>
-                  </button>
-                  
-                  <button
-                    type="button"
-                    onClick={() => alert("Saved to Library!")}
-                    className="h-[38px] px-5 rounded-full font-bricolage text-[13px] font-semibold text-white bg-transparent border border-white/25 hover:bg-white/10 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-[0.98] transition-all select-none"
-                  >
-                    <FolderPlus size={14} className="text-white" />
-                    <span>Save to Library</span>
                   </button>
                 </div>
               </div>

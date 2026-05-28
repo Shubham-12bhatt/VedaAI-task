@@ -19,6 +19,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import Sidebar from "@/components/Sidebar";
 import { useAssignmentStore, Assignment } from "@/app/assignments/assignmentStore";
+import { toast } from "sonner";
 
 const DEFAULT_RUBRIC_OPTIONS = [
   "Accuracy / Correctness",
@@ -393,7 +394,7 @@ export default function AIEvaluationPage() {
 
             <div className="flex items-center gap-4">
               <button
-                onClick={() => alert("No new notifications")}
+                onClick={() => toast.info("No new notifications")}
                 className="w-9 h-9 flex items-center justify-center hover:bg-[#F1F1F1] rounded-full relative transition-all duration-200 cursor-pointer"
               >
                 <Bell size={18} className="text-[#1F1F1F]" />
@@ -433,7 +434,7 @@ export default function AIEvaluationPage() {
                 <div className="flex items-center gap-2.5 mt-4">
                   <button
                     type="button"
-                    onClick={() => alert("Edit quiz details...")}
+                    onClick={() => toast.info("Edit quiz details...")}
                     className="h-[38px] px-5 rounded-full font-bricolage text-[13px] font-semibold text-[#1F1F1F] bg-white border border-[#E1E1E1] hover:bg-neutral-50 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-[0.98] transition-all select-none"
                   >
                     <Pencil size={14} className="text-[#1F1F1F]" />
@@ -442,7 +443,7 @@ export default function AIEvaluationPage() {
                   
                   <button
                     type="button"
-                    onClick={() => alert("Saved to Library!")}
+                    onClick={() => toast.success("Saved to Library!")}
                     className="h-[38px] px-5 rounded-full font-bricolage text-[13px] font-semibold text-[#1F1F1F] bg-white border border-[#E1E1E1] hover:bg-neutral-50 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-[0.98] transition-all select-none"
                   >
                     <FolderPlus size={14} className="text-[#1F1F1F]" />

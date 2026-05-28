@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Bricolage_Grotesque } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -27,7 +28,10 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${bricolageGrotesque.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#EEEEEE]">{children}</body>
+      <body className="min-h-full flex flex-col bg-[#EEEEEE]">
+        {children}
+        <Toaster position="top-right" richColors />
+      </body>
     </html>
   );
 }

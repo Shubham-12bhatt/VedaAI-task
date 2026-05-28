@@ -3,6 +3,7 @@
 import React, { useState, useRef } from "react";
 import { Upload, X, FileText, CheckCircle2 } from "lucide-react";
 import { FileData } from "@/app/assignments/assignmentStore";
+import { toast } from "sonner";
 
 interface FileUploadZoneProps {
   value: FileData | null;
@@ -21,13 +22,13 @@ export default function FileUploadZone({ value, onChange, error }: FileUploadZon
   const handleFile = (file: File) => {
     // Validate format
     if (!allowedTypes.includes(file.type)) {
-      alert("Invalid file format. Only PDF, PNG, JPG, and JPEG are allowed.");
+      toast.error("Invalid file format. Only PDF, PNG, JPG, and JPEG are allowed.");
       return;
     }
 
     // Validate size
     if (file.size > maxSizeBytes) {
-      alert("File size exceeds the 10MB limit.");
+      toast.error("File size exceeds the 10MB limit.");
       return;
     }
 

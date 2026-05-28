@@ -15,6 +15,7 @@ import {
 import Sidebar from "@/components/Sidebar";
 import AssignmentCard from "@/components/AssignmentCard";
 import { useAssignmentStore } from "@/app/assignments/assignmentStore";
+import { toast } from "sonner";
 
 export default function AssignmentsDashboardPage() {
   const router = useRouter();
@@ -131,7 +132,7 @@ export default function AssignmentsDashboardPage() {
             <div className="flex items-center gap-4">
               {/* Notification Bell */}
               <button
-                onClick={() => alert("No new notifications")}
+                onClick={() => toast.info("No new notifications")}
                 className="w-9 h-9 flex items-center justify-center hover:bg-[#F1F1F1] rounded-full relative transition-all duration-200 cursor-pointer"
               >
                 <Bell size={18} className="text-[#1F1F1F]" />

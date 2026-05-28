@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { LayoutGrid, FileText, Settings, Sparkles, BarChart2 } from "lucide-react";
 import Logo from "@/components/Logo";
 import { useAssignmentStore } from "@/app/assignments/assignmentStore";
+import { toast } from "sonner";
 
 interface SidebarProps {
   className?: string;
@@ -29,7 +30,7 @@ export default function Sidebar({ className = "", onCloseMobile }: SidebarProps)
     if (name === "Assignments") {
       router.push("/assignments");
     } else {
-      alert(`Navigating to ${name}...`);
+      toast.info(`Navigating to ${name}...`);
     }
     if (onCloseMobile) onCloseMobile();
   };
@@ -108,7 +109,7 @@ export default function Sidebar({ className = "", onCloseMobile }: SidebarProps)
       <div className="flex flex-col gap-4">
         {/* Settings */}
         <button
-          onClick={() => alert("Settings clicked...")}
+          onClick={() => toast.info("Settings clicked...")}
           className="w-full flex items-center gap-3 px-4 py-2 text-left font-bricolage text-[16px] font-normal tracking-[-0.04em] leading-[1.4] text-[#5E5E5E] hover:bg-[#F9F9F9] hover:text-[#1F1F1F] transition-all duration-150 cursor-pointer"
         >
           <Settings size={18} className="shrink-0 text-[#8E8E93]" />

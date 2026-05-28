@@ -26,6 +26,7 @@ import DatePicker from "@/components/DatePicker";
 import FileUploadZone from "@/components/FileUploadZone";
 import QuestionRow from "@/components/QuestionRow";
 import { useAssignmentStore } from "@/app/assignments/assignmentStore";
+import { toast } from "sonner";
 
 export default function CreateAssignmentPage() {
   const router = useRouter();
@@ -105,7 +106,7 @@ export default function CreateAssignmentPage() {
           })
           .catch((err) => {
             console.error("Assignment generation failed:", err);
-            alert(`Generation failed: ${err.message || err}`);
+            toast.error(`Generation failed: ${err.message || err}`);
             setIsGenerating(false);
           });
       }
@@ -116,7 +117,7 @@ export default function CreateAssignmentPage() {
     const SpeechRecognition =
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      alert("Speech recognition is not supported in this browser. Please try Google Chrome.");
+      toast.warning("Speech recognition is not supported in this browser. Please try Google Chrome.");
       return;
     }
 
@@ -221,7 +222,7 @@ export default function CreateAssignmentPage() {
 
             <div className="flex items-center gap-4">
               <button
-                onClick={() => alert("No new notifications")}
+                onClick={() => toast.info("No new notifications")}
                 className="w-9 h-9 flex items-center justify-center hover:bg-[#F1F1F1] rounded-full relative transition-all duration-200 cursor-pointer"
               >
                 <Bell size={18} className="text-[#1F1F1F]" />
